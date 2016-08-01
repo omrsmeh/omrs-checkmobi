@@ -6,6 +6,10 @@
   "scripts": {
     "test": "make test"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/omrsmeh/omrs-checkmobi.git"
+  },
   "keywords": [
     "checkmobi",
     "checkmobi npm",
