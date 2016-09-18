@@ -1,8 +1,15 @@
 'use strict';
 
+const CHECKMOBI_SECRET            = 'YOUR_CHECKMOBI_SECRET';
+const VALIED_MOBILE_NUMBER        = 'YOUR_MOBILE_NUMBER_FOR_TEST';
+const CHECKMOBI_MSG_ID            = 'YOUR_CHECKMOBI_MESSAGE_ID';
+const CHECKMOBI_SMS_ID            = 'YOUR_CHECKMOBI_SMS_ID';
+const CHECKMOBI_SMS_VERIFY_NUMBER = 'YOUR_CHECKMOBI_SMS_VERIFICATION_NUMBER'
+const CHECKMOBI_VALID_PIN         = 'VALID_CHECKMOBI_PIN';
+
 let should = require('chai').should();
 let CB = require('../index');
-let cb = new CB('xxxx');
+let cb = new CB(CHECKMOBI_SECRET);
 
 describe('#Getting Number Info', () => {
 
@@ -16,7 +23,7 @@ describe('#Getting Number Info', () => {
   });
 
   it('Invalid Number E.164 Format', (done) => {
-    cb.phoneInformation('+9199', (error, response) => {
+    cb.phoneInformation('+0199', (error, response) => {
       error.should.equal(true);
       response.should.be.a('string');
       response.should.equal('Invalid phone number format (Only E164 format accepted).')
@@ -25,7 +32,7 @@ describe('#Getting Number Info', () => {
   });
 
   it('Invalid Number', (done) => {
-    cb.phoneInformation('+9199368631', (error, response) => {
+    cb.phoneInformation('+135980654', (error, response) => {
       error.should.equal(true);
       response.should.be.a('string');
       response.should.equal('Invalid phone number format (Only E164 format accepted).')
@@ -34,11 +41,17 @@ describe('#Getting Number Info', () => {
   });
 
   it('Valid Request', (done) => {
-    cb.phoneInformation('+919936863147', (error, response) => {
-      error.should.equal(false);
-      response.should.be.a('object');
+    // Default mobile number can't validate
+    if(VALIED_MOBILE_NUMBER !== 'YOUR_MOBILE_NUMBER_FOR_TEST') {
+      cb.phoneInformation(VALIED_MOBILE_NUMBER, (error, response) => {
+        error.should.equal(false);
+        response.should.be.a('object');
+        done();
+      });
+    }
+    else {
       done();
-    });
+    }
   });
 
 });
@@ -56,8 +69,17 @@ describe('#Getting Prefixes', () => {
 });
 
 describe('#Get Message Information', () => {
+  var runTest = true;
+
+  beforeEach(function() {
+    runTest = (CHECKMOBI_SECRET !== 'YOUR_CHECKMOBI_SECRET');
+  });
 
   it('Validate Null', (done) => {
+    if(!runTest) {
+      return done();
+    }
+
     cb.getMessageInformation(null, (error, response) => {
       error.should.equal(true);
       response.should.be.a('string');
@@ -67,7 +89,11 @@ describe('#Get Message Information', () => {
   });
 
   it('Invalid ID Format', (done) => {
-    cb.getMessageInformation('+9199368631', (error, response) => {
+    if(!runTest) {
+      return done();
+    }
+
+    cb.getMessageInformation(VALIED_MOBILE_NUMBER, (error, response) => {
       error.should.equal(true);
       response.should.be.a('string');
       response.should.equal('Invalid request id')
@@ -76,7 +102,11 @@ describe('#Get Message Information', () => {
   });
 
   it('MessageInfo (Invalid ID)', (done) => {
-    cb.getMessageInformation('MSG-ED26AC71-807B-49B1-A81E-3956224A0CDC', (error, response) => {
+    if(!runTest) {
+      return done();
+    }
+
+    cb.getMessageInformation(CHECKMOBI_MSG_ID, (error, response) => {
       error.should.equal(true);
       response.should.be.a('string');
       response.should.equal('Resource cannot be found');
@@ -87,8 +117,16 @@ describe('#Get Message Information', () => {
 });
 
 describe('#Get Validate Status', () => {
+  var runTest = true;
+
+  beforeEach(function() {
+    runTest = (CHECKMOBI_SECRET !== 'YOUR_CHECKMOBI_SECRET');
+  });
 
   it('Validate Null', (done) => {
+    if(!runTest) {
+      return done();
+    }
     cb.getValidateStatus(null, (error, response) => {
       error.should.equal(true);
       response.should.be.a('string');
@@ -98,7 +136,10 @@ describe('#Get Validate Status', () => {
   });
 
   it('Invalid ID Format', (done) => {
-    cb.getValidateStatus('+9199368631', (error, response) => {
+    if(!runTest) {
+      return done();
+    }
+    cb.getValidateStatus(VALIED_MOBILE_NUMBER, (error, response) => {
       error.should.equal(true);
       response.should.be.a('string');
       response.should.equal('Invalid request id')
@@ -107,7 +148,10 @@ describe('#Get Validate Status', () => {
   });
 
   it('Invalid ID', (done) => {
-    cb.getValidateStatus('MSG-ED26AC71-807B-49B1-A81E-3956224A0CDC', (error, response) => {
+    if(!runTest) {
+      return done();
+    }
+    cb.getValidateStatus(CHECKMOBI_MSG_ID, (error, response) => {
       error.should.equal(true);
       response.should.be.a('string');
       response.should.equal('Invalid request id');
@@ -116,7 +160,10 @@ describe('#Get Validate Status', () => {
   });
 
   it('Info By ID', (done) => {
-    cb.getValidateStatus('SMS-BD34D431-3E3B-4EF3-97B5-A4417340BB49', (error, response) => {
+    if(!runTest) {
+      return done();
+    }
+    cb.getValidateStatus(CHECKMOBI_SMS_ID, (error, response) => {
       error.should.equal(false);
       response.should.be.a('object');
       done();
@@ -133,11 +180,11 @@ describe('#Send SMS', () => {
       response.should.be.a('string');
       response.should.equal('Invalid Request')
       done();
-    });
+     });
   });
 
   it('Invalid (Pass String)', (done) => {
-    cb.sendMessage('+9199368631', (error, response) => {
+    cb.sendMessage(VALIED_MOBILE_NUMBER, (error, response) => {
       error.should.equal(true);
       response.should.be.a('string');
       response.should.equal('Required options are missing')
@@ -218,7 +265,7 @@ describe('#Send SMS', () => {
   });
 
   it('Invalid (Object With Two Property One with valid value and second empty)', (done) => {
-    cb.sendMessage({"to": '+919936863147', "text": ''}, (error, response) => {
+    cb.sendMessage({"to": VALIED_MOBILE_NUMBER, "text": ''}, (error, response) => {
       error.should.equal(true);
       response.should.be.a('string');
       response.should.equal('Required options are missing')
@@ -226,13 +273,17 @@ describe('#Send SMS', () => {
     });
   });
 
-  // it('Invalid (Object With valid values)', (done) => {
-  //   cb.sendMessage({"to": '+919936863147', "text": 'test'}, (error, response) => {
-  //     error.should.equal(false);
-  //     response.should.be.a('object');
-  //     done();
-  //   });
-  // });
+  it('Invalid (Object With valid values)', (done) => {
+    if(CHECKMOBI_SECRET === 'YOUR_CHECKMOBI_SECRET') {
+      return done();
+    }
+
+    cb.sendMessage({"to": VALIED_MOBILE_NUMBER, "text": 'test'}, (error, response) => {
+      error.should.equal(false);
+      response.should.be.a('object');
+      done();
+    });
+  });
 });
 
 describe('#Validate Phone Number', () => {
@@ -283,7 +334,7 @@ describe('#Validate Phone Number', () => {
   });
 
   it('Invalid (Empty second param)', (done) => {
-    cb.validatePhone('SMS-BD34D431-3E3B-4EF3-97B5-A4417340BB49', '', (error, response) => {
+    cb.validatePhone(CHECKMOBI_SMS_ID, '', (error, response) => {
       error.should.equal(true);
       response.should.be.a('string');
       response.should.equal('Required information missing')
@@ -301,7 +352,7 @@ describe('#Validate Phone Number', () => {
   });
 
   it('Invalid (phone number)', (done) => {
-    cb.validatePhone('SMS-BD34D432-3E3B-4EF3-97B5-A4417340BB49', 'sms', (error, response) => {
+    cb.validatePhone(CHECKMOBI_SMS_ID, 'sms', (error, response) => {
       error.should.equal(true);
       response.should.be.a('string');
       response.should.equal('Invalid phone number format (Only E164 format accepted).')
@@ -310,7 +361,11 @@ describe('#Validate Phone Number', () => {
   });
 
   it('Valid Values', (done) => {
-    cb.validatePhone('+919936863147', 'sms', (error, response) => {
+    if(CHECKMOBI_SECRET === 'YOUR_CHECKMOBI_SECRET') {
+      return done();
+    }
+
+    cb.validatePhone(VALIED_MOBILE_NUMBER, 'sms', (error, response) => {
       error.should.equal(false);
       response.should.be.a('object');
       done();
@@ -357,16 +412,26 @@ describe('#Validate PIN', () => {
   });
 
   it('Invalid (Empty second param)', (done) => {
-    cb.validatePin('SMS-BD34D431-3E3B-4EF3-97B5-A4417340BB49', '', (error, response) => {
+    if(
+      (CHECKMOBI_SECRET === 'YOUR_CHECKMOBI_SECRET') ||
+      (CHECKMOBI_SMS_ID === 'YOUR_CHECKMOBI_SMS_ID')
+    ) { return done(); }
+
+    cb.validatePin(CHECKMOBI_SMS_ID, '', (error, response) => {
       error.should.equal(true);
       response.should.be.a('string');
-      response.should.equal('Invalid request payload')
+      response.should.equal(('Invalid request payload'))
       done();
     });
   });
 
   it('Invalid (values)', (done) => {
-    cb.validatePin('SMS-BD34D432-3E3B-4EF3-97B5-A4417340BB49', '68768', (error, response) => {
+    if(
+      (CHECKMOBI_SECRET === 'YOUR_CHECKMOBI_SECRET') ||
+      (CHECKMOBI_SMS_ID === 'YOUR_CHECKMOBI_SMS_ID')
+    ) { return done(); }
+
+    cb.validatePin(CHECKMOBI_SMS_ID, '68768', (error, response) => {
       error.should.equal(true);
       response.should.be.a('string');
       response.should.equal('Resource cannot be found')
@@ -375,7 +440,13 @@ describe('#Validate PIN', () => {
   });
 
   it('Valid Values', (done) => {
-    cb.validatePin('SMS-BD34D431-3E3B-4EF3-97B5-A4417340BB49', '19657', (error, response) => {
+    if(
+      (CHECKMOBI_SECRET === 'YOUR_CHECKMOBI_SECRET') ||
+      (CHECKMOBI_SMS_ID === 'YOUR_CHECKMOBI_SMS_ID') ||
+      (CHECKMOBI_VALID_PIN === 'VALID_CHECKMOBI_PIN')
+    ) { return done(); }
+
+    cb.validatePin(CHECKMOBI_SMS_ID, CHECKMOBI_VALID_PIN, (error, response) => {
       error.should.equal(false);
       response.should.be.a('object');
       done();
