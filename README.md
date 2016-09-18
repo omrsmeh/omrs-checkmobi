@@ -2,6 +2,10 @@
 
 Checkmobi NPM module
 
+[![Build Status](https://travis-ci.org/omrsmeh/omrs-checkmobi.svg?branch=master)](https://travis-ci.org/omrsmeh/omrs-checkmobi)
+[![Dependency Status](https://david-dm.org/jedireza/generator-hapi-style.svg?style=flat)](https://david-dm.org/jedireza/generator-hapi-style)
+[![devDependency Status](https://david-dm.org/jedireza/generator-hapi-style/dev-status.svg?style=flat)](https://david-dm.org/jedireza/generator-hapi-style#info=devDependencies)
+
 ## Installation
 
 Download node at [nodejs.org](http://nodejs.org) and install it, if you haven't already.
